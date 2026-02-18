@@ -26,7 +26,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
   const py = cy - radius * Math.sin(theta); 
 
   // Vertical Screen Position (on the right)
-  const screenX = 500;
+  const screenX = 520;
   const shadowY = py;
 
   // Vector Scaling
@@ -47,35 +47,49 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
         viewBox="0 0 600 550"
         className="w-full h-full max-w-2xl overflow-visible"
       >
-        {/* Background Light Beam (Volumetric effect) */}
-        {showVectors.projection && (
-          <defs>
-            <linearGradient id="torchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="rgba(34, 211, 238, 0.2)" />
-              <stop offset="100%" stopColor="rgba(34, 211, 238, 0)" />
-            </linearGradient>
-          </defs>
-        )}
+        <defs>
+          <linearGradient id="torchBeam" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(34, 211, 238, 0.15)" />
+            <stop offset="100%" stopColor="rgba(34, 211, 238, 0)" />
+          </linearGradient>
+          <radialGradient id="shadowGlow">
+            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.8)" />
+            <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+          </radialGradient>
+        </defs>
 
-        {/* Torch on the left */}
-        <g transform="translate(20, 230)" className="glow-cyan opacity-80">
-           <path d="M 0 10 L 30 0 L 30 40 L 0 30 Z" fill="#1e293b" stroke="#22d3ee" strokeWidth="2" />
-           <rect x="30" y="5" width="5" height="30" fill="#22d3ee" />
-           {/* Light source indicator */}
-           <circle cx="35" cy="20" r="4" fill="white" />
+        {/* Large Torch / Light Source on the left */}
+        <g transform={`translate(10, ${cy - 40})`} className="glow-cyan">
+           {/* Torch Body */}
+           <path d="M 0 10 L 50 0 L 50 80 L 0 70 Z" fill="#1e293b" stroke="#22d3ee" strokeWidth="3" />
+           <rect x="50" y="5" width="10" height="70" fill="#22d3ee" className="opacity-80" />
+           {/* Inner glow of the lens */}
+           <ellipse cx="55" cy="40" rx="4" ry="35" fill="white" />
         </g>
+
+        {/* Main Light Beam Area */}
+        {showVectors.projection && (
+          <rect 
+            x="60" 
+            y={cy - radius - 20} 
+            width={screenX - 60} 
+            height={radius * 2 + 40} 
+            fill="url(#torchBeam)" 
+            className="pointer-events-none"
+          />
+        )}
 
         {/* Parallel Light Rays from Left to Right */}
         {showVectors.projection && (
-          <g opacity="0.3">
-            {[...Array(9)].map((_, i) => (
+          <g opacity="0.4">
+            {[...Array(13)].map((_, i) => (
               <line
                 key={i}
-                x1="40"
-                y1={cy - radius + (i * radius * 2) / 8}
+                x1="60"
+                y1={cy - radius - 10 + (i * (radius * 2 + 20)) / 12}
                 x2={screenX}
-                y2={cy - radius + (i * radius * 2) / 8}
-                stroke="rgba(34, 211, 238, 0.1)"
+                y2={cy - radius - 10 + (i * (radius * 2 + 20)) / 12}
+                stroke="rgba(34, 211, 238, 0.2)"
                 strokeWidth="1"
               />
             ))}
@@ -84,11 +98,11 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
 
         {/* Vertical Screen */}
         <line 
-          x1={screenX} y1="50" x2={screenX} y2="450" 
-          stroke={COLORS.screen} strokeWidth="6" 
+          x1={screenX} y1="40" x2={screenX} y2="460" 
+          stroke={COLORS.screen} strokeWidth="8" 
           strokeLinecap="round"
         />
-        <text x={screenX + 10} y="40" fill={COLORS.screen} className="text-[10px] font-bold math-font">VERTICAL SCREEN</text>
+        <text x={screenX - 20} y="30" fill={COLORS.screen} className="text-[12px] font-bold math-font text-right">SCREEN</text>
 
         {/* Circular Path */}
         <circle
@@ -101,26 +115,27 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
           strokeDasharray="8 8"
         />
 
-        {/* Torch-to-Particle ray (Projection) */}
+        {/* Focal ray highlighting the particle's specific shadow path */}
         {showVectors.projection && (
-          <g>
+          <g className="glow-cyan">
             <line
-              x1="40"
+              x1="60"
               y1={py}
               x2={px}
               y2={py}
-              stroke="rgba(34, 211, 238, 0.4)"
-              strokeWidth="2"
-              strokeDasharray="4 2"
+              stroke="#22d3ee"
+              strokeWidth="3"
+              strokeDasharray="5 3"
+              className="opacity-60"
             />
             <line
               x1={px}
               y1={py}
               x2={screenX}
               y2={py}
-              stroke="rgba(255,255,255,0.2)"
-              strokeWidth="1"
-              strokeDasharray="2 2"
+              stroke="rgba(255,255,255,0.4)"
+              strokeWidth="2"
+              strokeDasharray="2 4"
             />
           </g>
         )}
@@ -137,7 +152,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
               strokeWidth="2"
             />
             <circle cx={cx} cy={cy} r="4" fill="#94a3b8" />
-            <text x={cx + 10} y={cy - 10} fill="#94a3b8" className="text-sm math-font italic">r</text>
+            <text x={cx + 10} y={cy - 10} fill="#94a3b8" className="text-sm math-font italic font-bold">r</text>
             
             {/* Angle Indicator */}
             <path
@@ -147,10 +162,10 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
               strokeWidth="2"
             />
             <text 
-               x={cx + 45 * Math.cos(theta / 2)} 
-               y={cy - 45 * Math.sin(theta / 2)} 
+               x={cx + 50 * Math.cos(theta / 2)} 
+               y={cy - 50 * Math.sin(theta / 2)} 
                fill="#fbbf24" 
-               className="text-[10px] math-font"
+               className="text-[12px] math-font font-bold"
             >
               θ
             </text>
@@ -166,10 +181,10 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
               x2={px + vx}
               y2={py + vy}
               stroke={COLORS.velocity}
-              strokeWidth="3"
+              strokeWidth="4"
               markerEnd="url(#arrowhead-v)"
             />
-            <text x={px + vx + 5} y={py + vy + 5} fill={COLORS.velocity} className="text-[10px] math-font">v</text>
+            <text x={px + vx + 5} y={py + vy + 5} fill={COLORS.velocity} className="text-[12px] math-font font-bold">v</text>
           </g>
         )}
 
@@ -182,35 +197,48 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
               x2={px + ax}
               y2={py + ay}
               stroke={COLORS.acceleration}
-              strokeWidth="3"
+              strokeWidth="4"
               markerEnd="url(#arrowhead-a)"
             />
-            <text x={px + ax/2} y={py + ay/2 - 10} fill={COLORS.acceleration} className="text-[10px] math-font">a</text>
+            <text x={px + ax/2} y={py + ay/2 - 15} fill={COLORS.acceleration} className="text-[12px] math-font font-bold">a</text>
           </g>
         )}
 
-        {/* Particle */}
+        {/* The Particle itself */}
         <circle
           cx={px}
           cy={py}
-          r="8"
+          r="10"
           fill={COLORS.particle}
           className="glow-cyan"
         />
 
-        {/* Shadow on the Vertical Screen */}
+        {/* The Shadow on the Vertical Screen - Enlarged and Glowing */}
         <g className="glow-white">
           <circle
             cx={screenX}
             cy={shadowY}
-            r="8"
-            fill={COLORS.shadow}
-            className="opacity-90"
+            r="12"
+            fill="url(#shadowGlow)"
+            className="opacity-100"
           />
-          <text x={screenX + 15} y={shadowY + 5} fill="white" className="text-xs math-font font-bold">y = r sin(ωt)</text>
+          <circle
+            cx={screenX}
+            cy={shadowY}
+            r="6"
+            fill="white"
+          />
+          <text 
+            x={screenX + 20} 
+            y={shadowY + 5} 
+            fill="white" 
+            className="text-sm math-font font-bold tracking-tight"
+          >
+            y = r sin(ωt)
+          </text>
         </g>
 
-        {/* Definitions of Arrows */}
+        {/* Arrowhead Definitions */}
         <defs>
           <marker id="arrowhead-v" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill={COLORS.velocity} />
@@ -223,14 +251,14 @@ const Visualizer: React.FC<VisualizerProps> = ({ state, showVectors }) => {
       
       {/* Legend */}
       <div className="absolute bottom-4 left-4 space-y-2 pointer-events-none">
-        <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700 p-3 rounded-xl shadow-xl">
+        <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-2xl">
             <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-cyan-400"></div>
-                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Circular Motion (θ)</span>
+                <div className="w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]"></div>
+                <span className="text-[11px] text-slate-200 font-bold uppercase tracking-widest">Particle Position (UCM)</span>
             </div>
-            <div className="flex items-center gap-3 mt-1">
-                <div className="w-3 h-3 rounded-full bg-white shadow-[0_0_8px_white]"></div>
-                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">SHM Shadow (y)</span>
+            <div className="flex items-center gap-3 mt-2">
+                <div className="w-4 h-4 rounded-full bg-white shadow-[0_0_12px_white]"></div>
+                <span className="text-[11px] text-slate-200 font-bold uppercase tracking-widest">Shadow Projection (SHM)</span>
             </div>
         </div>
       </div>
