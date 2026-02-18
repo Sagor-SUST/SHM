@@ -6,37 +6,37 @@ export const DERIVATION_STEPS: DerivationStep[] = [
     id: 1,
     title: "Angular Position",
     formula: "θ = ωt",
-    description: "The particle moves with constant angular velocity ω. Its angular position θ at time t is the product of ω and t."
+    description: "The particle moves along the circle with constant angular velocity ω. Its angle θ increases linearly with time."
   },
   {
     id: 2,
-    title: "Horizontal Projection",
-    formula: "x = r cos(θ)",
-    description: "The shadow's position on the x-axis is the horizontal projection of the radius vector r."
+    title: "Vertical Projection",
+    formula: "y = r sin(θ)",
+    description: "The shadow's height on the vertical screen is the projection of the radius vector onto the y-axis."
   },
   {
     id: 3,
     title: "Displacement Equation",
-    formula: "x(t) = r cos(ωt)",
-    description: "Substituting θ = ωt into the projection gives the periodic displacement function."
+    formula: "y(t) = r sin(ωt)",
+    description: "Substituting θ = ωt gives the vertical position of the shadow as a sinusoidal function of time."
   },
   {
     id: 4,
     title: "Velocity",
-    formula: "v = dx/dt = -rω sin(ωt)",
-    description: "Differentiating displacement with respect to time gives the instantaneous velocity of the shadow."
+    formula: "v_y = dy/dt = rω cos(ωt)",
+    description: "The vertical velocity of the shadow is the derivative of its position, oscillating with phase shifted by 90°."
   },
   {
     id: 5,
     title: "Acceleration",
-    formula: "a = dv/dt = -rω² cos(ωt)",
-    description: "Differentiating velocity reveals the acceleration, which is proportional to -cos(ωt)."
+    formula: "a_y = dv_y/dt = -rω² sin(ωt)",
+    description: "Differentiating velocity reveals that acceleration is proportional to the negative of the displacement."
   },
   {
     id: 6,
     title: "SHM Conclusion",
-    formula: "a = -ω²x",
-    description: "Since x = r cos(ωt), we find a = -ω²x. This is the defining equation of Simple Harmonic Motion."
+    formula: "a = -ω²y",
+    description: "Since y = r sin(ωt), we find a = -ω²y. This confirms the shadow performs Simple Harmonic Motion."
   }
 ];
 
@@ -47,5 +47,6 @@ export const COLORS = {
   velocity: '#facc15', // Yellow
   acceleration: '#f472b6', // Pink/Fuchsia
   shadow: '#ffffff',   // White
-  screen: '#1e293b'    // Dark Blue
+  screen: '#1e293b',   // Dark Blue
+  lightRay: 'rgba(34, 211, 238, 0.05)'
 };
